@@ -9,6 +9,7 @@ names_list = parametrs.columns
 mm_df['param'] = parametrs.apply(lambda row: [[row[x] for x in names_list]], axis=1)
 mm_df = mm_df[['mode_id', 'param']]
 mm_df['param'] = mm_df['param'].apply(lambda x: tuple(x[0]))
+print(mm_df.head())
 
 staff_df = pd.read_csv('data/staff_score.csv', sep='\t')
 staff_df = staff_df.drop(['Score_ID', 'Trainer_OK', 'Update_Date'], axis=1)
