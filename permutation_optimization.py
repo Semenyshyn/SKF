@@ -61,17 +61,21 @@ columns = ['mode_id', 'm_values', 'empl_id', 'e_values', 'subtraction', 'coef_+'
 rows = []
 
 for m, e in sorted(result_pairs):
-    print(list(df[(df['mode_id'] == m) & (df['empl_id'] == e)].values[0]))
     rows.append(list(df[(df['mode_id'] == m) & (df['empl_id'] == e)].values[0]))
 
 res_df = pd.DataFrame(rows, columns=columns)
 
-res_df = res_df[['mode_id', 'empl_id', 'coef_+', 'coef_-']].head()
+res_df = res_df[['mode_id', 'empl_id', 'coef_+', 'coef_-']]
 staff = pd.read_csv(r'C:\Users\IVAN.SEMENYSHYN\PycharmProjects\SKF\data\staff.csv', sep='\t',
                     names=['empl_id', 'id', 'empl_name'])
 staff.drop('id', axis=1, inplace=True)
 
 res_df = res_df.set_index('empl_id').join(staff.set_index('empl_id'), lsuffix='_1', rsuffix='_2',
                                           how='left').reset_index()
-# res_df = res_df.set_index('empl_id').join(staff.set_index('empl_id'), lsuffix='_1', rsuffix='_2', how='left')
-print(res_df)
+machines = pd.read_csv(r'C:\Users\IVAN.SEMENYSHYN\PycharmProjects\SKF\data\machine.csv', sep='\t',
+                       names=['mode_id', 'machine_name', 'machine_mode', 'machine_sub_mode'])
+res_df = res_df.set_index('mode_id').join(machines.set_index('mode_id'), lsuffix='_1', rsuffix='_2',
+                                          how='left').reset_index()
+
+res_df.sort_values(by='mode_id', inplace=True)
+res_df.to_excel('RESULT.xlsx', index=False)
