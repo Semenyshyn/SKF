@@ -5,6 +5,11 @@ df2 = pd.read_csv('data/machines.csv', sep='\t', index_col=0)
 df1['e_values'] = df1['e_values'].apply(lambda x: [int(d) for d in x[1:-1].split(',')])
 df2['m_values'] = df2['m_values'].apply(lambda x: [int(d) for d in x[1:-1].split(',')])
 
+df1 = pd.DataFrame(
+    [['emp1', (0, 1, 3)], ['emp2', (2, 2, 4)], ['emp3', (2, 3, 5)]], columns=['empl_id', 'e_values'])
+df2 = pd.DataFrame(
+    [['mach1', (1, 3, 2)], ['mach2', (3, 3, 1)], ['mach3', (4, 2, 3)]], columns=['mode_id', 'm_values'])
+
 df1['key'] = 0
 df2['key'] = 0
 df = df2.merge(df1)
@@ -17,8 +22,10 @@ df['coef_+'] = df['subtraction'].apply(lambda x: sum([i for i in x if i > 0]))
 df['coef_-'] = df['subtraction'].apply(lambda x: sum([i for i in x if i < 0]))
 df['absolute_error'] = df['subtraction'].apply(lambda x: sum([abs(i) for i in x]))
 
-df = df.sort_values(by=['absolute_error', 'coef_-', 'coef_+'], ascending=[True, False, True])
+df = df.sort_values(by=['absolute_error', 'coef_-'], ascending=[True, False])
 df.reset_index(drop=True, inplace=True)
+# df.to_excel('CARTESIAN_PROD.xlsx', index=False)
+
 all_emp = list(df['empl_id'].unique())
 all_mach = list(df['mode_id'].unique())
 
@@ -32,6 +39,7 @@ result_pairs = []
 
 k = 0
 for row in df.values:
+    print(len(all_emp))
     if curr_m != row[0]:
         for m, e in emp_group:
             if (len(emp_group) == 1) & (m in all_mach) & (e in all_emp):
@@ -40,10 +48,14 @@ for row in df.values:
                 all_emp.remove(e)
             elif (m in all_mach) & (e in all_emp):
                 emp_indexes = [n for n, x in enumerate(list(df['empl_id'])) if (x == e) & (n >= k)]
+                # print(k)
+                # print(m, e)
                 if emp_indexes:
                     emp_tmp.append((m, e, min(emp_indexes)))
         if emp_tmp:
+            print(emp_tmp)
             a, b = sorted(emp_tmp, key=lambda x: x[2], reverse=True)[0][:2]
+            # print( sorted(emp_tmp, key=lambda x: x[2], reverse=True))
             result_pairs.append((a, b))
             all_mach.remove(a)
             all_emp.remove(b)
@@ -78,4 +90,5 @@ res_df = res_df.set_index('mode_id').join(machines.set_index('mode_id'), lsuffix
                                           how='left').reset_index()
 
 res_df.sort_values(by='mode_id', inplace=True)
-res_df.to_excel('RESULT.xlsx', index=False)
+# res_df.to_excel('RESULT.xlsx', index=False)
+print(res_df)

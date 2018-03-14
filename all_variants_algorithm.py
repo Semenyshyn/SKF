@@ -1,8 +1,12 @@
 import pandas as pd
 import itertools as it
 
-df1 = pd.DataFrame([['emp1', (0, 1, 3)], ['emp2', (2, 2, 4)], ['emp3', (2, 3, 5)]], columns=['employees', 'e_values'])
-df2 = pd.DataFrame([['mach1', (1, 3, 2)], ['mach2', (3, 3, 1)], ['mach3', (4, 2, 3)]], columns=['machines', 'm_values'])
+df1 = pd.DataFrame(
+    [['emp1', (0, 1, 3)], ['emp2', (1, 3, 4)], ['emp3', (2, 3, 2)]],
+    columns=['employees', 'e_values'])
+df2 = pd.DataFrame(
+    [['mach1', (1, 3, 2)], ['mach2', (3, 3, 1)], ['mach3', (4, 2, 3)]],
+    columns=['machines', 'm_values'])
 emp = ['emp1', 'emp2', 'emp3']
 mach = ['mach1', 'mach2', 'mach3']
 
