@@ -27,19 +27,44 @@ df.reset_index(drop=True, inplace=True)
 df = df[['mode_id', 'empl_id', 'absolute_error']].reset_index(drop=True)
 
 df_rows = iter(df.values)
-
 curr = next(df_rows)
-empl_group = [(curr[0], curr[1])]
 
+all_emp = list(df['empl_id'].unique())
+all_mach = list(df['mode_id'].unique())
+
+empl_group = [tuple(curr)]
+emp_tmp = []
+
+result_pairs = []
+
+k = 0
 while True:
     row = next(df_rows, None)
     if row is None:
-        print(empl_group)
         break
     if curr[0] != row[0]:
-        print(empl_group)
+        for m, e, error in empl_group:
+            if (len(empl_group) == 1) & (m in all_mach) & (e in all_emp):
+                result_pairs.append((m, e))
+                all_emp.remove(e)
+                all_mach.remove(m)
+            elif (m in all_mach) & (e in all_emp):
+                emp_indexes = [n for n, x in enumerate(list(df['empl_id'])) if (x == e) & (n >= k)]
+                print(emp_indexes)
+                print('=' * 10)
+        # print(empl_group)
         empl_group = [tuple(row)]
         curr = row
     else:
         empl_group.append(tuple(row))
         curr = row
+    k += 1
+
+columns = ['mode_id', 'empl_id', 'absolute_error']
+rows = []
+
+for m, e in sorted(result_pairs):
+    rows.append(list(df[(df['mode_id'] == m) & (df['empl_id'] == e)].values[0]))
+
+res_df = pd.DataFrame(rows, columns=columns)
+print(res_df[['mode_id', 'empl_id', 'absolute_error']])
