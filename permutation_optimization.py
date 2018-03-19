@@ -22,7 +22,7 @@ df['coef_+'] = df['subtraction'].apply(lambda x: sum([i for i in x if i > 0]))
 df['coef_-'] = df['subtraction'].apply(lambda x: sum([i for i in x if i < 0]))
 df['absolute_error'] = df['subtraction'].apply(lambda x: sum([abs(i) for i in x]))
 
-df = df.sort_values(by=['absolute_error', 'coef_-'], ascending=[True, False])
+df = df.sort_values(by=['absolute_error'], ascending=[True])
 df.reset_index(drop=True, inplace=True)
 # df.to_excel('CARTESIAN_PROD.xlsx', index=False)
 
