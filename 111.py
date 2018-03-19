@@ -43,15 +43,18 @@ while True:
     if row is None:
         break
     if curr[0] != row[0]:
+        # print(empl_group)
+        print('====')
         for m, e, error in empl_group:
             if (len(empl_group) == 1) & (m in all_mach) & (e in all_emp):
                 result_pairs.append((m, e))
                 all_emp.remove(e)
                 all_mach.remove(m)
             elif (m in all_mach) & (e in all_emp):
-                emp_indexes = [n for n, x in enumerate(list(df['empl_id'])) if (x == e) & (n >= k)]
-                print(emp_indexes)
-                print('=' * 10)
+                emp_indexes = [n for n, x in enumerate(list(df['empl_id'])) if (x == e) & (n > k)]
+                if emp_indexes:
+                    emp_tmp.append((m, e, min(emp_indexes), df['absolute_error'].get_value(min(emp_indexes)) - error))
+                    print(emp_tmp)
         # print(empl_group)
         empl_group = [tuple(row)]
         curr = row

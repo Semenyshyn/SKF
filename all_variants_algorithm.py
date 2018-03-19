@@ -2,13 +2,25 @@ import pandas as pd
 import itertools as it
 
 df1 = pd.DataFrame(
-    [['emp1', (0, 1, 3)], ['emp2', (1, 3, 4)], ['emp3', (2, 3, 2)]],
+    [['emp1', (0, 1, 3)], ['emp2', (1, 3, 4)], ['emp3', (2, 3, 2)],
+     ['emp4', (4, 2, 1)],
+     ['emp5', (2, 3, 3)]
+     ],
     columns=['employees', 'e_values'])
 df2 = pd.DataFrame(
-    [['mach1', (1, 3, 2)], ['mach2', (3, 3, 1)], ['mach3', (4, 2, 3)]],
+    [['mach1', (1, 3, 2)], ['mach2', (3, 3, 1)], ['mach3', (4, 2, 3)],
+     ['mach4', (2, 2, 2)],
+     ['mach5', (1, 3, 1)]
+     ],
     columns=['machines', 'm_values'])
-emp = ['emp1', 'emp2', 'emp3']
-mach = ['mach1', 'mach2', 'mach3']
+emp = ['emp1', 'emp2', 'emp3'
+    , 'emp4',
+       'emp5'
+       ]
+mach = ['mach1', 'mach2', 'mach3'
+    , 'mach4',
+        'mach5'
+        ]
 
 coef = 1000
 res = None

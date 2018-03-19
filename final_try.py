@@ -43,7 +43,7 @@ for row in df.values:
                     mode_tmp.append(
                         (m, e, min(mode_indexes), df['absolute_error'].get_value(min(mode_indexes)) - error))
         if mode_tmp:
-            a, b = sorted(mode_tmp, key=lambda x: (-x[3], -x[2]))[0][:2]
+            a, b = sorted(mode_tmp, key=lambda x: (-x[3], -x[2]))   [0][:2]
             result_pairs.append((a, b))
             all_mach.remove(a)
             all_emp.remove(b)
