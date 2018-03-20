@@ -49,4 +49,5 @@ for i in df.values:
         pass
 
 res_df = pd.DataFrame(res_list, columns=df.columns)
-res_df.to_excel('RESULT_first.xlsx', index=False)
+# res_df.to_excel('RESULT_first.xlsx', index=False)
+print(res_df)

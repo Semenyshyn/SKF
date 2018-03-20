@@ -32,7 +32,6 @@ df['absolute_error'] = df['subtraction'].apply(lambda x: sum([abs(i) for i in x]
 
 df = df.sort_values(by=['absolute_error'], ascending=[True])
 df.reset_index(drop=True, inplace=True)
-print(df)
 
 
 def remove_pairs(m_v, e_v, df_v):
@@ -40,7 +39,7 @@ def remove_pairs(m_v, e_v, df_v):
     df_v = df_v[df_v['mode_id'] != m_v]
     df_v = df_v[['mode_id', 'empl_id', 'absolute_error']].reset_index(drop=True)
     df_rows_v = iter(df_v.values)
-    curr_v = next(df_rows_v)
+    curr_v = next(df_rows_v, None)
     return df_rows_v, curr_v, df_v.reset_index(drop=True)
 
 
@@ -49,37 +48,40 @@ df_2 = df[['mode_id', 'empl_id', 'absolute_error']].reset_index(drop=True)
 df_rows = iter(df_2.values)
 curr = next(df_rows)
 
-empl_group = [tuple(curr)]
-emp_tmp = []
+mode_group = [tuple(curr)]
+group_tmp = []
 
 result_pairs = []
 
 while True:
     row = next(df_rows, None)
     if row is None:
-        print(curr)
-        a, b = curr[:2]
-        result_pairs.append((a, b))
-        break
-    if curr[0] != row[0]:
-
-        for m, e, error in empl_group:
-            if len(empl_group) == 1:
+        try:
+            a, b = curr[:2]
+            result_pairs.append((a, b))
+            break
+        except:
+            break
+    if curr[1] != row[1]:
+        for m, e, error in mode_group:
+            if len(mode_group) == 1:
                 result_pairs.append((m, e))
                 df_rows, curr, df_2 = remove_pairs(m, e, df_2)
-                empl_group = [tuple(curr)]
+                if len(df_2) == 0:
+                    break
+                mode_group = [tuple(curr)]
             else:
-                e_idxs = [n for n, x in enumerate(list(df_2['empl_id'])) if (x == e)]
-                emp_tmp.append((m, e, df_2['absolute_error'].get_value(min(e_idxs[1:])) - error))
+                e_idxs = [n for n, x in enumerate(list(df_2['mode_id'])) if (x == m)]
+                group_tmp.append((m, e, df_2['absolute_error'].get_value(min(e_idxs[1:])) - error))
 
-        if emp_tmp:
-            a, b = sorted(emp_tmp, key=lambda x: -x[2])[0][:2]
+        if group_tmp:
+            a, b = sorted(group_tmp, key=lambda x: -x[2])[0][:2]
             result_pairs.append((a, b))
             df_rows, curr, df_2 = remove_pairs(a, b, df_2)
-            empl_group = [tuple(curr)]
-            emp_tmp = []
+            mode_group = [tuple(curr)]
+            group_tmp = []
     else:
-        empl_group.append(tuple(row))
+        mode_group.append(tuple(row))
         curr = row
 
 columns = ['mode_id', 'm_values', 'empl_id', 'e_values', 'subtraction', 'coef_+', 'coef_-', 'absolute_error']
@@ -91,5 +93,5 @@ for m, e in sorted(result_pairs):
 res_df = pd.DataFrame(rows, columns=columns)
 print('=' * 33)
 print(res_df[['mode_id', 'empl_id', 'coef_+', 'coef_-']])
-print(result_pairs)
-res_df.to_excel('RESULT_v2.xlsx', index=False)
+
+# res_df.to_excel('RESULT_v2_emp.xlsx', index=False)
