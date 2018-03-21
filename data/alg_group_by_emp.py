@@ -1,22 +1,22 @@
 import pandas as pd
 
-# df1 = pd.read_csv('employees.csv', sep='\t', index_col=0)
-# df2 = pd.read_csv('machines.csv', sep='\t', index_col=0)
-# df1['e_values'] = df1['e_values'].apply(lambda x: [int(d) for d in x[1:-1].split(',')])
-# df2['m_values'] = df2['m_values'].apply(lambda x: [int(d) for d in x[1:-1].split(',')])
+df1 = pd.read_csv('employees.csv', sep='\t', index_col=0)
+df2 = pd.read_csv('machines.csv', sep='\t', index_col=0)
+df1['e_values'] = df1['e_values'].apply(lambda x: [int(d) for d in x[1:-1].split(',')])
+df2['m_values'] = df2['m_values'].apply(lambda x: [int(d) for d in x[1:-1].split(',')])
 
-df1 = pd.DataFrame(
-    [['emp1', (0, 1, 3)], ['emp2', (1, 3, 4)], ['emp3', (2, 3, 2)],
-     ['emp4', (4, 2, 1)],
-     # ['emp5', (2, 3, 3)]
-     ],
-    columns=['empl_id', 'e_values'])
-df2 = pd.DataFrame(
-    [['mach1', (1, 3, 2)], ['mach2', (3, 3, 1)], ['mach3', (4, 2, 3)],
-     ['mach4', (2, 2, 2)],
-     # ['mach5', (1, 3, 1)]
-     ],
-    columns=['mode_id', 'm_values'])
+# df1 = pd.DataFrame(
+#     [['emp1', (0, 1, 3)], ['emp2', (1, 3, 4)], ['emp3', (2, 3, 2)],
+#      ['emp4', (4, 2, 1)],
+#      # ['emp5', (2, 3, 3)]
+#      ],
+#     columns=['empl_id', 'e_values'])
+# df2 = pd.DataFrame(
+#     [['mach1', (1, 3, 2)], ['mach2', (3, 3, 1)], ['mach3', (4, 2, 3)],
+#      ['mach4', (2, 2, 2)],
+#      # ['mach5', (1, 3, 1)]
+#      ],
+#     columns=['mode_id', 'm_values'])
 
 df1['key'] = 0
 df2['key'] = 0
@@ -32,6 +32,8 @@ df['absolute_error'] = df['subtraction'].apply(lambda x: sum([abs(i) for i in x]
 
 df = df.sort_values(by=['absolute_error'], ascending=[True])
 df.reset_index(drop=True, inplace=True)
+
+print(df)
 
 
 def remove_pairs(m_v, e_v, df_v):
@@ -72,14 +74,27 @@ while True:
                 mode_group = [tuple(curr)]
             else:
                 e_idxs = [n for n, x in enumerate(list(df_2['mode_id'])) if (x == m)]
-                group_tmp.append((m, e, df_2['absolute_error'].get_value(min(e_idxs[1:])) - error))
+                group_tmp.append((m, e, df_2['empl_id'].get_value(min(e_idxs[1:])),
+                                  df_2['absolute_error'].get_value(min(e_idxs[1:])) - error))
 
         if group_tmp:
-            a, b = sorted(group_tmp, key=lambda x: -x[2])[0][:2]
+            print(sorted(group_tmp, key=lambda x: -x[3]))
+            a, b = sorted(group_tmp, key=lambda x: -x[3])[0][:2]
+            print(a, b)
             result_pairs.append((a, b))
             df_rows, curr, df_2 = remove_pairs(a, b, df_2)
             mode_group = [tuple(curr)]
+            try:
+                for row1 in sorted(group_tmp, key=lambda x: -x[3])[1:]:
+                    a1, b1 = row1[0], row1[2]
+                    print(a1, b1)
+                    result_pairs.append((a1, b1))
+                    df_rows, curr, df_2 = remove_pairs(a1, b1, df_2)
+                    mode_group = [tuple(curr)]
+            except:
+                pass
             group_tmp = []
+
     else:
         mode_group.append(tuple(row))
         curr = row
@@ -94,4 +109,4 @@ res_df = pd.DataFrame(rows, columns=columns)
 print('=' * 33)
 print(res_df[['mode_id', 'empl_id', 'coef_+', 'coef_-']])
 
-# res_df.to_excel('RESULT_v2_emp.xlsx', index=False)
+res_df.to_excel('RESULT_v3_emp.xlsx', index=False)

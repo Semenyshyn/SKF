@@ -14,11 +14,11 @@ df2 = pd.DataFrame(
      ],
     columns=['machines', 'm_values'])
 emp = ['emp1', 'emp2', 'emp3'
-       , 'emp4',
+    , 'emp4',
        #    'emp5'
        ]
 mach = ['mach1', 'mach2', 'mach3'
-        , 'mach4',
+    , 'mach4',
         #     'mach5'
         ]
 
