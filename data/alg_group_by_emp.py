@@ -33,7 +33,8 @@ df['absolute_error'] = df['subtraction'].apply(lambda x: sum([abs(i) for i in x]
 df = df.sort_values(by=['absolute_error'], ascending=[True])
 df.reset_index(drop=True, inplace=True)
 
-print(df)
+
+# print(df)
 
 
 def remove_pairs(m_v, e_v, df_v):
@@ -75,22 +76,26 @@ while True:
             else:
                 e_idxs = [n for n, x in enumerate(list(df_2['mode_id'])) if (x == m)]
                 group_tmp.append((m, e, df_2['empl_id'].get_value(min(e_idxs[1:])),
-                                  df_2['absolute_error'].get_value(min(e_idxs[1:])) - error))
+                                  df_2['absolute_error'].get_value(min(e_idxs[1:])) - error, min(e_idxs[1:])))
 
         if group_tmp:
-            print(sorted(group_tmp, key=lambda x: -x[3]))
-            a, b = sorted(group_tmp, key=lambda x: -x[3])[0][:2]
+            print(sorted(group_tmp, key=lambda x: (x[-1], -x[3])))
+            a, b = sorted(group_tmp, key=lambda x: (x[-1], -x[3]))[0][:2]
             print(a, b)
             result_pairs.append((a, b))
             df_rows, curr, df_2 = remove_pairs(a, b, df_2)
             mode_group = [tuple(curr)]
             try:
-                for row1 in sorted(group_tmp, key=lambda x: -x[3])[1:]:
+                for row1 in sorted(group_tmp, key=lambda x: (x[-1], -x[3]))[1:]:
                     a1, b1 = row1[0], row1[2]
-                    print(a1, b1)
-                    result_pairs.append((a1, b1))
-                    df_rows, curr, df_2 = remove_pairs(a1, b1, df_2)
-                    mode_group = [tuple(curr)]
+                    # print(a1, b1)
+                    if b1 not in [x[1] for x in result_pairs]:
+                        print(a1, b1)
+                        result_pairs.append((a1, b1))
+                        df_rows, curr, df_2 = remove_pairs(a1, b1, df_2)
+                        mode_group = [tuple(curr)]
+                    else:
+                        pass
             except:
                 pass
             group_tmp = []
@@ -109,4 +114,4 @@ res_df = pd.DataFrame(rows, columns=columns)
 print('=' * 33)
 print(res_df[['mode_id', 'empl_id', 'coef_+', 'coef_-']])
 
-res_df.to_excel('RESULT_v3_emp.xlsx', index=False)
+res_df.to_excel('RESULT_v4_emp.xlsx', index=False)
